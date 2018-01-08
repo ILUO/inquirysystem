@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gluxen.dao.PatientDao">
+    <resultMap id="patientMap" type="com.gluxen.util.model.One2Many">
+        <id column="patient_id" property="patientId"/>
+        <result column="certificates_type" property="certificatesType"/>
+        <result column="certificates_number" property="certificatesNumber"/>
+        <result column="pname" property="name"/>
+        <result column="gender" property="gender"/>
+        <result column="birthday" property="birthday"/>
+        <result column="nationality" property="nationality"/>
+        <result column="pnational" property="national"/>
+        <result column="incunabulum" property="incunabulum"/>
+        <result column="residence" property="residence"/>
+        <result column="height" property="height"/>
+        <result column="weight" property="weight"/>
+        <result column="occupation" property="occupation"/>
+        <result column="religious_belief" property="religiousBelief"/>
+        <result column="eating_habits" property="eatingHabits"/>
+        <result column="family_members" property="familyMembers"/>
+        <result column="important_diagno" property="importantDiagno"/>
+        <result column="main_symptoms" property="mainSymptoms"/>
+        <result column="family_history" property="familyHistory"/>
+        <result column="infection_history" property="infectionHistory"/>
+        <result column="anamensis" property="anamensis"/>
+        <result column="contact_history" property="contactHistory"/>
+        <result column="marriage_history" property="marriageHistory"/>
+        <result column="birth_history" property="birthHistory"/>
+        <result column="trauma_history" property="traumaHistory"/>
+        <result column="surgery_history" property="surgeryHistory"/>
+        <result column="smoke" property="smoke"/>
+        <result column="drink" property="drink"/>
+        <result column="quit_smoke" property="quitSmoke"/>
+        <result column="quit_drink" property="quitDrink"/>
+    </resultMap>
+    <select id="getPatientInfo" resultMap="patientMap">
+        SELECT
+            *
+        FROM patient
+        WHERE patient.patient_id=#{patientId}
+    </select>
+
+    <select id="getNewPid" resultType="Integer">
+        SELECT IFNULL(MAX(patient_id)+1,10000)
+        AS newId
+        FROM patient
+    </select>
+
+    <insert id="addPatient">
+        INSERT INTO patient
+        (patient_id,
+         pname,
+         gender,
+         certificates_type,
+         certificates_number,
+         birthday,
+         nationality,
+         pnational,
+         incunabulum,
+         residence,
+         height,
+         weight,
+         occupation,
+         religious_belief,
+         eating_habits,
+         family_members,
+         important_diagno,
+         main_symptoms,
+         family_history,
+         infection_history,
+         anamensis,
+         contact_history,
+         marriage_history,
+         birth_history,
+         trauma_history,
+         surgery_history,
+         smoke,
+         drink,
+         quit_smoke,
+         quit_drink)
+        VALUES
+        (#{patientId},
+         #{name},
+         #{gender},
+         #{certificatesType},
+         #{certificatesNumber},
+         #{birthday},
+         #{nationality},
+         #{national},
+         #{incunabulum},
+         #{residence},
+         #{height},
+         #{weight},
+         #{occupation},
+         #{religiousBelief},
+         #{eatingHabits},
+         #{familyMembers},
+         #{importantDiagno},
+         #{mainSymptoms},
+         #{familyHistory},
+         #{infectionHistory},
+         #{anamensis},
+         #{contactHistory},
+         #{marriageHistory},
+         #{birthHistory},
+         #{traumaHistory},
+         #{surgeryHistory},
+         #{smoke},
+         #{drink},
+         #{quitSmoke},
+         #{quitDrink}
+         )
+    </insert>
+
+</mapper>
