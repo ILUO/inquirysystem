@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gluxen.dao.ChoiceHistoryDao">
+    <!--<resultMap id="choiceHistoryMap" type="com.gluxen.util.model.One2Many">-->
+        <!--<id column="questionId" property="questionId"/>-->
+        <!--<result column="stem" property="stem"/>-->
+        <!--<result column="questionType" property="questionType"/>-->
+        <!--<collection property="historyOptionList" ofType="com.alibaba.fastjson.JSONObject">-->
+            <!--<id column="choiceId" property="choiceId"/>-->
+            <!--<result column="optionValue" property="optionValue"/>-->
+            <!--<result column="description" property="description"/>-->
+        <!--</collection>-->
+        <!--<collection property="historyChoiceList" ofType="com.alibaba.fastjson.JSONObject">-->
+            <!--<id column="historyId" property="historyId"/>-->
+            <!--<result column="inquiryId" property="inquiryId"/>-->
+            <!--<result column="choseId" property="choseId"/>-->
+            <!--<result column="remark" property="remark"/>-->
+        <!--</collection>-->
+    <!--</resultMap>-->
+    <!--<select id="getChoiceHistory" resultMap="choiceHistoryMap">-->
+        <!--SELECT-->
+        <!--ic.question_id questionId,-->
+        <!--ic.stem stem,-->
+        <!--ot.option_id choiceId,-->
+        <!--ot.option_value optionValue,-->
+        <!--ot.description description,-->
+        <!--ch.history_id historyId,-->
+        <!--ch.inquiry_id inquiryId,-->
+        <!--ch.option_id choseId,-->
+        <!--ch.remark remark-->
+        <!--FROM inquirychoice ic-->
+        <!--LEFT JOIN optiontable  ot ON ot.question_id = ic.question_id-->
+        <!--LEFT JOIN choicehistory ch ON ic.question_id = ch.question_id AND ch.inquiry_id = #{latestInquiryId}-->
+    <!--</select>-->
+
+    <resultMap id="choiceHistoryMap" type="com.gluxen.util.model.One2Many">
+        <id column="questionTypeId" property="questionTypeId"/>
+        <result column="questionType" property="questionType"/>
+        <collection property="choiceQuestionList" ofType="com.gluxen.util.model.One2Many">
+            <id column="questionId" property="questionId"/>
+            <result column="stem" property="stem"/>
+            <collection property="historyOptionList" ofType="com.alibaba.fastjson.JSONObject">
+                <id column="choiceId" property="choiceId"/>
+                <result column="optionValue" property="optionValue"/>
+                <result column="description" property="description"/>
+            </collection>
+            <collection property="historyChoiceList" ofType="com.alibaba.fastjson.JSONObject">
+                <id column="historyId" property="historyId"/>
+                <result column="inquiryId" property="inquiryId"/>
+                <result column="choseId" property="choseId"/>
+                <result column="remark" property="remark"/>
+            </collection>
+        </collection>
+    </resultMap>
+    <select id="getChoiceHistory" resultMap="choiceHistoryMap">
+        SELECT
+        qt.question_type_id questionTypeId,
+        qt.question_type questionType,
+        ic.question_id questionId,
+        ic.stem stem,
+        ot.option_id choiceId,
+        ot.option_value optionValue,
+        ot.description description,
+        ch.history_id historyId,
+        ch.inquiry_id inquiryId,
+        ch.option_id choseId,
+        ch.remark remark
+        FROM questiontype qt
+        LEFT JOIN inquirychoice ic ON ic.question_type_id = qt.question_type_id
+        LEFT JOIN optiontable  ot ON ot.question_id = ic.question_id
+        LEFT JOIN choicehistory ch ON ic.question_id = ch.question_id AND ch.inquiry_id = #{latestInquiryId}
+    </select>
+
+    <insert id="addChoiceHistory" parameterType="java.util.List">
+        INSERT INTO choicehistory
+        (history_id,
+        inquiry_id,
+        question_id,
+        option_id,
+        remark)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.historyId},
+            #{item.inquiryId},
+            #{item.questionId},
+            #{item.choseId},
+            #{item.remark})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        question_id = VALUES (question_id),
+        option_id = VALUES (option_id),
+        remark = VALUES (remark)
+    </insert>
+
+    <select id="getDescription" resultType="String">
+        SELECT description
+        FROM optiontable
+        WHERE option_id = #{choseId}
+    </select>
+
+    <select id="getChoiceAnswer" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        ch.remark remark,
+        ot.description description,
+        ic.stem stem,
+        ic.question_type_id questionTypeId
+        FROM choicehistory ch
+        LEFT JOIN optiontable ot ON ch.option_id = ot.option_id
+        LEFT JOIN inquirychoice ic ON ch.question_id = ic.question_id
+		WHERE ch.inquiry_id = #{inquryId}
+    </select>
+</mapper>

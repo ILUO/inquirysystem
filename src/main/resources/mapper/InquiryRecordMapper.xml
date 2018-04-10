@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gluxen.dao.InquiryRecordDao">
+
+    <select id="getMedicalRecordList" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        pa.pname patientName,
+        p.inquiry_date inquiryDate,
+        p.patient_id patientId,
+        p.inquiry_id inquiryId
+        FROM dailypatient p,patient pa
+        <where>
+            p.patient_id = pa.patient_id
+            <if test="endDate != null and endDate != ''" >
+                AND p.inquiry_date &lt;= #{endDate}
+            </if>
+            <if test="startDate != null and startDate != ''">
+                AND p.inquiry_date &gt;= #{startDate}
+            </if>
+            <if test="patientName != null and patientName !=''">
+                AND p.pname like CONCAT(CONCAT('%', #{patientName, jdbcType=VARCHAR}),'%')
+            </if>
+            <if test="keyString != null and keyString != ''">
+                AND p.inquiry_result like CONCAT(CONCAT('%', #{keyString, jdbcType=VARCHAR}),'%')
+            </if>
+        </where>
+        ORDER BY inquiryId DESC
+        LIMIT #{offSet},#{pageRow}
+    </select>
+
+    <select id="getInquiryIdList" resultType="Integer">
+        SELECT
+        p.inquiry_id inquiryId
+        FROM dailypatient p
+        <where>
+            <if test="endDate != null and endDate != ''" >
+                AND p.inquiry_date &lt;= #{endDate}
+            </if>
+            <if test="startDate != null and startDate != ''">
+                AND p.inquiry_date &gt;= #{startDate}
+            </if>
+            <if test="keyString != null and keyString != ''">
+                AND p.inquiry_result like CONCAT(CONCAT('%', #{keyString, jdbcType=VARCHAR}),'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="countMedicalRecord" resultType="Integer">
+        SELECT
+        count(p.inquiry_id)
+        FROM dailypatient p
+        <where>
+            <if test="endDate != null and endDate != ''" >
+                p.inquiry_date &lt;= #{endDate}
+            </if>
+            <if test="startDate != null and startDate != ''">
+                AND p.inquiry_date &gt;= #{startDate}
+            </if>
+            <if test="patientName != null and patientName !=''">
+                 AND p.pname like CONCAT(CONCAT('%', #{patientName, jdbcType=VARCHAR}),'%')
+            </if>
+            <if test="keyString != null and keyString != ''">
+                AND p.inquiry_result like CONCAT(CONCAT('%', #{keyString, jdbcType=VARCHAR}),'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="getResultList" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        p.inquiry_date inquiryDate,
+        p.times times
+        FROM dailypatient p
+        WHERE
+        p.patient_id = #{patientId}
+        LIMIT #{offSet},#{pageRow}
+    </select>
+
+    <select id="countResult" resultType="Integer">
+        SELECT
+        count(p.patient_id)
+        FROM dailypatient p
+        WHERE
+        p.patient_id = #{patientId}
+    </select>
+
+    <select id="getOneResult" resultType="String">
+        SELECT
+        p.inquiry_result
+        FROM dailypatient P
+        WHERE
+        p.inquiry_id = #{inquiryId}
+    </select>
+
+</mapper>

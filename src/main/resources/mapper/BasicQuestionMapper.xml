@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gluxen.dao.BasicQuestionDao">
+    <resultMap id="basicQuestionMap" type="com.gluxen.util.model.One2Many">
+        <id column="questionId" property="questionId"/>
+        <result column="stem" property="stem"/>
+        <result column="questionType" property="questionType"/>
+        <collection property="choiceList" ofType="com.alibaba.fastjson.JSONObject">
+            <id column="choiceId" property="choiceId"/>
+            <result column="optionValue" property="optionValue"/>
+            <result column="description" property="description"/>
+        </collection>
+        <collection property="historyList" ofType="com.alibaba.fastjson.JSONObject">
+            <id column="historyId" property="historyId"/>
+            <result column="patientId" property="patientId"/>
+            <result column="choseId" property="choseId"/>
+            <result column="remark" property="remark"/>
+        </collection>
+    </resultMap>
+    <select id="getBasicQuestion" resultMap="basicQuestionMap">
+        SELECT
+        bq.question_id questionId,
+        bq.stem stem,
+        bc.choice_id choiceId,
+        bc.option_value optionValue,
+        bc.description description,
+        bh.history_id historyId,
+        bh.patient_id patientId,
+        bh.choice_id choseId,
+        bh.remark remark
+        FROM basicquestion bq
+        LEFT JOIN basicchoice  bc ON bq.question_id = bc.question_id
+        LEFT JOIN basichistory bh ON bq.question_id = bh.question_id AND bh.patient_id = #{patientId}
+    </select>
+
+    <insert id="addBasicQuestion" parameterType="java.util.List">
+        INSERT INTO basichistory
+        (history_id,
+        patient_id,
+        question_id,
+        choice_id,
+        remark)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.historyId},
+            #{item.patientId},
+            #{item.questionId},
+            #{item.choiceId},
+            #{item.remark})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        question_id = VALUES (question_id),
+        choice_id = VALUES (choice_id),
+        remark = VALUES (remark)
+    </insert>
+
+    <select id="getDescription" resultType="String">
+        SELECT
+        description
+        FROM
+        basicchoice
+        WHERE
+        basicchoice.choice_id = #{choseId}
+    </select>
+
+</mapper>

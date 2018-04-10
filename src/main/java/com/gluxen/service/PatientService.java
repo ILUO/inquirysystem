@@ -12,7 +12,7 @@ public interface PatientService {
      * @param patientId
      * @return
      */
-    JSONObject getPatientInfo(int patientId);
+    JSONObject getPatientInfo(Long patientId);
 
     /**
      * 获取新增病人Id
@@ -23,10 +23,56 @@ public interface PatientService {
 
 
     /**
-     * 新增病人基本信息
-     *
+     * 获取病人家属
      * @param jsonObject
      * @return
      */
-    JSONObject addPatient(JSONObject jsonObject);
+    JSONObject getFamily(JSONObject jsonObject);
+
+
+    /**
+     * 新增/更新病人基本信息、基本病史、家属
+     * @param basicInfo
+     * @param basicHistory
+     * @param family
+     * @return
+     */
+    JSONObject addPatientBasic(JSONObject basicInfo,JSONObject basicHistory,JSONObject family,JSONObject basicQuestion);
+
+    /**
+     * 获取病人基本病史列表
+     * @param jsonObject
+     * @return
+     */
+    JSONObject getBasicHistoryList(JSONObject jsonObject);
+
+    /**
+     * 删除基本病史
+     * @param basiccompletionId
+     * @return
+     */
+    JSONObject deletetHistory(int basiccompletionId);
+
+    /**
+     * 获取病人列表
+     * @param jsonObject
+     * @return
+     */
+    JSONObject getPatientList(JSONObject jsonObject);
+
+
+    /**
+     * 删除病人家属
+     * @param memberId
+     * @return
+     */
+    JSONObject deleteFamily(int memberId);
+
+    /**
+     * 获取病人基本信息文字描述
+     * @param patientId
+     * @return
+     */
+    JSONObject getDescription(Long patientId);
+
 }

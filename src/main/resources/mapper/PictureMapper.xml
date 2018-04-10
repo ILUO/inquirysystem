@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gluxen.dao.PictureDao">
+    <insert id="uploadPicture">
+        INSERT INTO picture(
+        picture_id,
+        inquiry_id,
+        inquiry_date,
+        picture_url,
+        patient_id
+        )VALUES
+        (#{pictureId},
+        #{inquiryId},
+        #{inquiryDate},
+        #{pictureUrl},
+        #{patientId})
+    </insert>
+
+    <delete id="deletePicture" >
+        DELETE FROM picture
+        WHERE picture.picture_id = #{pictureId}
+    </delete>
+
+    <select id="countPicture" resultType="Integer">
+        SELECT count(*)
+        FROM picture
+        WHERE patient_id = #{patientId}
+    </select>
+
+    <select id="getPictureList" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        p.inquiry_id inquiryId,
+        p.inquiry_date inquiryDate,
+        p.picture_url pictureUrl
+        FROM picture p
+        WHERE p.inquiry_id = #{inquiryId}
+        LIMIT #{offSet},#{pageRow}
+    </select>
+
+
+    <select id="getPicture" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        p.picture_url pictureUrl
+        FROM picture p
+        WHERE p.picture_id = #{pictureId}
+    </select>
+
+</mapper>

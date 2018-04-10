@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gluxen.dao.PlaceDao">
+    <resultMap id="provinceMap" type="com.alibaba.fastjson.JSONObject">
+        <id column="id" property="Id"/>
+        <result column="prov_id" property="provId"/>
+        <result column="prov_name" property="provName"/>
+    </resultMap>
+    <select id="getProvince" resultMap="provinceMap">
+        SELECT
+        p.prov_id,
+        p.prov_name
+        FROM province p
+    </select>
+    <resultMap id="cityMap" type="com.alibaba.fastjson.JSONObject">
+        <id column="id" property="Id"/>
+        <result column="city_id" property="cityId"/>
+        <result column="city_name" property="cityName"/>
+    </resultMap>
+    <select id="getCity" resultMap="cityMap">
+        SELECT
+        c.city_id,
+        c.city_name
+        FROM city c
+        WHERE c.prov_id = #{provId}
+    </select>
+
+    <resultMap id="placeMap" type="com.gluxen.util.model.One2Many">
+        <id column="id" property="Id"/>
+        <result column="provId" property="provId"/>
+        <result column="provName" property="provName"/>
+        <collection property="cityList" ofType="com.alibaba.fastjson.JSONObject">
+            <id column="cid" property="cId"/>
+            <result column="cityId" property="cityId"/>
+            <result column="cityName" property="cityName"/>
+        </collection>
+    </resultMap>
+
+    <select id="getPlace" resultMap="placeMap">
+        SELECT
+        p.id Id,
+        p.prov_name provName,
+        ci.city_id cityId,
+        ci.city_name cityName
+        FROM province p
+        LEFT JOIN city ci ON p.prov_id = ci.prov_id
+    </select>
+
+    <select id="getProvName" resultType="String">
+        SELECT
+        p.prov_name provName
+        FROM province p
+        WHERE p.id = #{provId}
+    </select>
+
+    <select id="getCityName" resultType="String">
+        SELECT
+        ci.city_name cityName
+        FROM city ci
+        WHERE ci.city_id = #{cityId}
+    </select>
+
+
+</mapper>

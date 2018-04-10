@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gluxen.dao.InspectionIndexDao">
+    <resultMap id="inspectionIndexMap" type="com.alibaba.fastjson.JSONObject">
+        <id column="idexId" property="idexId"/>
+        <result column="patientId" property="patientId"/>
+        <result column="idexDescription" property="idexDescription"/>
+    </resultMap>
+
+    <select id="getInspectionIndex" resultMap="inspectionIndexMap">
+        SELECT
+        id.idx_id idexId,
+        id.patient_id patientId,
+        id.idex_description idexDescription
+        FROM inspectionindex id
+        WHERE id.patient_id=#{patientId}
+    </select>
+
+    <insert id="addInspectionIndex" parameterType="com.alibaba.fastjson.JSONObject">
+        INSERT INTO inspectionindex
+        (idx_id,
+        patient_id,
+        idex_description)
+        VALUES
+        (#{idxId},
+         #{patientId},
+         #{idexDescription})
+        ON DUPLICATE KEY UPDATE
+        idex_description = VALUES (idex_description)
+    </insert>
+
+    <select id="countInspection" resultType="Integer">
+        SELECT  count(i.patient_id)
+        FROM inspectionindex i
+        WHERE i.patient_id = #{patientId}
+    </select>
+
+    <delete id="deleteInspection">
+        DELETE FROM inspectionindex
+        WHERE idx_id = #{indexId}
+    </delete>
+</mapper>

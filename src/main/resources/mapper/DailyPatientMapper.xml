@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gluxen.dao.DailyPatientDao">
+    <insert id="addDailyPatient">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="inquiryId">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO dailypatient(
+        inquiry_id,
+        patient_id,
+        inquiry_date,
+        inquiry_type,
+        pname,
+        times,
+        today_num
+        )VALUES
+        (#{inquiryId},
+        #{patientId},
+        #{inquiryDate},
+        #{inquiryType},
+        #{pname},
+        #{times},
+        #{todayNum})
+    </insert>
+
+    <select id="getInquiryTimes" resultType="Integer">
+        SELECT COUNT(patient_id)
+        FROM dailypatient
+        WHERE dailypatient.patient_id = #{patientId}
+    </select>
+
+    <select id="getInquiryTT" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT *
+        FROM dailypatient
+        WHERE dailypatient.inquiry_id = #{inquiryId}
+    </select>
+
+    <select id="getdailyPatientList" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        dp.inquiry_id inquiryId,
+        dp.patient_id patientId,
+        dp.inquiry_type inquiryType,
+        p.pname pname,
+        dp.inquiry_date inquiryDate,
+        dp.inquiry_status inquiryStatus,
+        dp.today_num todayNum
+        FROM dailypatient dp,
+        patient p
+        WHERE dp.inquiry_date=#{inquiryDate}
+        AND p.patient_id = dp.patient_id
+        ORDER BY todayNum DESC
+        LIMIT #{offSet},#{pageRow}
+    </select>
+
+    <select id="countDailyPatient" resultType="Integer">
+        SELECT  count(dp.patient_id)
+        FROM dailypatient dp
+        WHERE dp.inquiry_date = #{inquiryDate}
+    </select>
+
+    <select id="getLatestInquiry" resultType="Integer">
+        SELECT  IFNULL(MAX(inquiry_id),-1)
+        FROM dailypatient dp
+        WHERE dp.inquiry_id
+        NOT IN (SELECT MAX(inquiry_id) FROM dailypatient WHERE patient_id=#{patientdId})
+        AND dp.patient_id = #{patientId}
+    </select>
+
+    <resultMap id="reportMap" type="com.gluxen.util.model.One2Many">
+        <id column="inquiryId" property="inquiryId"/>
+        <result column="inquiryType" property="inquiryType"/>
+        <result column="inquiryDate" property="inquiryDate"/>
+        <result column="times" property="times"/>
+        <association property="patientInfo" javaType="com.alibaba.fastjson.JSONObject">
+            <id column="patientId" property="patientId"/>
+            <result column="patientName" property="patientName"/>
+            <result column="city" property="city"/>
+            <result column="age" property="age"/>
+        </association>
+        <association property="main" javaType="com.alibaba.fastjson.JSONObject">
+            <id column="completionId" property="completionId"/>
+            <result column="answer" property="answer"/>
+        </association>
+        <collection property="amountList" ofType="com.alibaba.fastjson.JSONObject">
+            <id column="recipeId" property="recipeId"/>
+            <result column="amount" property="amount"/>
+        </collection>
+    </resultMap>
+
+    <select id="getDailyReport" resultMap="reportMap">
+        SELECT
+        dp.inquiry_id inquiryId,
+        dp.inquiry_type inquiryType,
+        dp.inquiry_date inquiryDate,
+        dp.times times,
+        p.pname patientName,
+        p.city city,
+        p.age age,
+        ch.answer answer,
+        SUM(r.amount) amount
+        FROM dailypatient dp
+        LEFT JOIN mainrecipe mr ON dp.inquiry_id = mr.inquiry_id
+        LEFT JOIN recipe r ON mr.mainrecipe_id = r.mainrecipe_id
+        LEFT JOIN completionhistory ch ON ch.inquiry_id = dp.inquiry_id AND ch.question_id = 15
+        LEFT JOIN patient p ON dp.patient_id = p.patient_id
+        <where>
+            <if test="endDate != null " >
+                dp.inquiry_date &lt;= #{endDate}
+            </if>
+            <if test="startDate != null">
+                AND dp.inquiry_date &gt;= #{startDate}
+            </if>
+        </where>
+        GROUP BY dp.inquiry_id
+        ORDER BY dp.inquiry_id DESC
+        LIMIT #{offSet},#{pageRow}
+    </select>
+
+    <select id="countDailyReport" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        dp.inquiry_id inquiryId,
+        dp.inquiry_type inquiryType,
+        dp.inquiry_date inquiryDate,
+        p.pname patientName,
+        p.city city,
+        ch.answer answer,
+        SUM(r.amount) amount
+        FROM dailypatient dp
+        LEFT JOIN mainrecipe mr ON dp.inquiry_id = mr.inquiry_id
+        LEFT JOIN recipe r ON mr.mainrecipe_id = r.mainrecipe_id
+        LEFT JOIN completionhistory ch ON ch.inquiry_id = dp.inquiry_id AND ch.question_id = 1
+        LEFT JOIN patient p ON dp.patient_id = p.patient_id
+        <where>
+            <if test="endDate != null " >
+                dp.inquiry_date &lt;= #{endDate}
+            </if>
+            <if test="startDate != null">
+                AND dp.inquiry_date &gt;= #{startDate}
+            </if>
+        </where>
+        GROUP BY dp.inquiry_id
+    </select>
+
+    <select id="getPatientNumber" resultType="Integer">
+        SELECT count(patient.patient_id)
+        FROM patient
+    </select>
+    
+    <select id="getPatientTime" resultType="Integer">
+        SELECT count(dailypatient.patient_id)
+        FROM dailypatient
+    </select>
+
+    <select id="getPatientId" resultType="Long">
+        SELECT patient_id
+        FROM dailypatient
+        WHERE dailypatient.inquiry_id = #{inquiryId}
+    </select>
+
+    <select id="countToday" resultType="Integer">
+        SELECT count(inquiry_id)
+        FROM dailypatient
+        WHERE dailypatient.inquiry_date = #{inquiryDate}
+    </select>
+
+    <select id="getInquiry" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        inquiry_date inquiryDate,
+        inquiry_type inquiryType,
+        inquiry_id inquiryId
+        FROM dailypatient
+        WHERE dailypatient.inquiry_id = #{inquiryId}
+    </select>
+
+    <update id="putInquiryResult">
+        UPDATE dailypatient
+        SET inquiry_result = #{inquiryResult}
+        WHERE inquiry_id = #{inquiryId}
+    </update>
+
+    <update id="updateStatus">
+        UPDATE dailypatient
+        SET inquiry_status = #{status}
+        WHERE inquiry_id = #{inquiryId}
+    </update>
+
+</mapper>

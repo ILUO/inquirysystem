@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gluxen.dao.ExportDataDao">
+
+    <resultMap id="MedicalHistoryMap" type="com.gluxen.util.model.One2Many">
+        <id column="inquiry_id" property="inquiryId"/>
+        <result column="inquiryDate" property="inquiryDate"/>
+        <result column="inquiryType" property="inquiryType"/>
+        <result column="pname" property="pname"/>
+        <result column="times" property="times"/>
+        <association property="basicInfo" javaType="com.alibaba.fastjson.JSONObject">
+            <id column="patientId" property="patientId"/>
+            <result column="certificatesType" property="certificatesType"/>
+            <result column="certificatesNumber" property="certificatesNumber"/>
+            <result column="birthday" property="birthday"/>
+            <result column="nationality" property="nationality"/>
+            <result column="pnational" property="national"/>
+            <result column="incunabulum" property="incunabulum"/>
+            <result column="residence" property="residence"/>
+            <result column="gender" property="gender"/>
+            <result column="height" property="height"/>
+            <result column="weight" property="weight"/>
+            <result column="occupation" property="occupation"/>
+            <result column="city" property="city"/>
+            <result column="pregnant" property="pregnant"/>
+            <result column="birth" property="birth"/>
+            <result column="prematureLabour" property="prematureLabour"/>
+            <result column="abortion" property="abortion"/>
+            <result column="belief" property="belief"/>
+            <result column="bloodTrans" property="bloodTrans"/>
+            <result column="smoke" property="smoke"/>
+            <result column="drink" property="drink"/>
+            <result column="dailyDrink" property="dailyDrink"/>
+            <result column="dailySmoke" property="dailySmoke"/>
+            <result column="contraception" property="contraception"/>
+            <result column="contactHistory" property="contactHistory"/>
+            <result column="eatingHabits" property="eatingHabits"/>
+            <result column="pastHistory" property="pastHistory"/>
+            <result column="marriage" property="marriage"/>
+            <result column="quitSmoke" property="quitSmoke"/>
+            <result column="quitDrink" property="quitDrink"/>
+            <result column="eatingHabitsRemark" property="eatingHabitsRemark"/>
+            <result column="pastHistoryRemark" property="pastHistoryRemark"/>
+            <result column="contactHistoryRemark" property="contactHistoryRemark"/>
+            <result column="traumaHistory" property="traumaHistory"/>
+            <result column="operationHistory" property="operationHistory"/>
+            <result column="familyHistory" property="familyHistory"/>
+            <result column="drugAllergy" property="drugAllergy"/>
+            <result column="drugAllergyRemark" property="drugAllergyRemark"/>
+            <result column="allergy" property="allergy"/>
+            <result column="allergyRemark" property="allergyRemark"/>
+            <result column="infectiousHistory" property="infectiousHistory"/>
+            <result column="infectiousHistoryRemark" property="infectiousHistoryRemark"/>
+            <result column="heredityHistory" property="heredityHistory"/>
+            <result column="heredityHistoryRemark" property="heredityHistoryRemark"/>
+            <result column="quitDrinkTime" property="quitDrinkTime"/>
+            <result column="quitSmokeTime" property="quitSmokeTime"/>
+            <result column="menarche" property="menarche"/>
+            <result column="menopauseAge" property="menopauseAge"/>
+            <result column="menstrualCycle" property="menstrualCycle"/>
+            <result column="menstruationPeriod" property="menstruationPeriod"/>
+        </association>
+        <collection property="downChoiceList" javaType="com.alibaba.fastjson.JSONObject">
+            <id column="historyId" property="historyId"/>
+            <result column="remark" property="remark"/>
+            <association property="option" javaType="com.alibaba.fastjson.JSONObject">
+                <id column="optionId" property="optionId"/>
+                <result column="description" property="description"/>
+            </association>
+            <association property="choiceQuestion" javaType="com.alibaba.fastjson.JSONObject">
+                <id column="chQuestionId" property="chQuestionId"/>
+                <result column="chStem" property="chStem"/>
+            </association>
+        </collection>
+        <collection property="downCompletionList" javaType="com.alibaba.fastjson.JSONObject">
+            <id column="completionId" property="completionId"/>
+            <result column="answer" property="answer"/>
+            <association property="completionQuestion" javaType="com.alibaba.fastjson.JSONObject">
+                <id column="coQuestionId" property="coQuestionId"/>
+                <result column="coStem" property="coStem"/>
+            </association>
+        </collection>
+    </resultMap>
+
+
+    <select id="getExcelData" resultMap="MedicalHistoryMap" parameterType="java.util.List">
+        SELECT
+        dp.inquiry_id inquiryId,
+        dp.inquiry_date inquiryDate,
+        dp.inquiry_type inquiryType,
+        dp.pname pname,
+        dp.times times,
+        p.birthday birthday,
+        p.nationality nationality,
+        p.pnational pnational,
+        p.incunabulum incunabulum,
+        p.residence residence,
+        p.gender gender,
+        p.height height,
+        p.weight weight,
+        p.occupation occupation,
+        p.city city,
+        p.age age,
+        p.pregnant pregnant,
+        p.birth birth,
+        p.premature_labour prematureLabour,
+        p.abortion abortion,
+        p.belief belief,
+        p.blood_trans bloodTrans,
+        p.smoke smoke,
+        p.drink drink,
+        p.daily_drink dailyDrink,
+        p.daily_smoke dailySmoke,
+        p.contraception contraception,
+        p.contact_history contactHistory,
+        p.eating_habits eatingHabits,
+        p.past_history pastHistory,
+        p.marriage marriage,
+        p.quit_smoke quitSmoke,
+        p.quit_drink quitDrink,
+        p.eating_habits_remark eatingHabitsRemark,
+        p.past_history_remark pastHistoryRemark,
+        p.contact_history_remark contactHistoryRemark,
+        p.trauma_history traumaHistory,
+        p.operation_history operationHistory,
+        p.family_history familyHistory,
+        p.drug_allergy drugAllergy,
+        p.drug_allergy_remark drugAllergyRemark,
+        p.allergy allergy,
+        p.allergy_remark allergyRemark,
+        p.infectious_history infectiousHistory,
+        p.infectious_history_remark infectiousHistoryRemark,
+        p.heredity_history heredityHistory,
+        p.heredity_history_remark heredityHistoryRemark,
+        p.quit_drink_time quitDrinkTime,
+        p.quit_smoke_time quitSmoketime,
+        p.menarche menarche,
+        p.menopause_age menopauseAge,
+        p.menstrual_cycle menstrualCycle,
+        p.menstruation_period menstruationPeriod,
+        ch.history_id historyId,
+        ch.remark remark,
+        ot.option_id optionId,
+        ot.description description,
+        ic.question_id chQuestionId,
+        ic.stem chStem,
+        coh.completion_id completionId,
+        coh.answer answer,
+        ico.question_id coQuestionId,
+        ico.stem coStem
+        FROM dailypatient dp
+        LEFT JOIN  patient p ON dp.patient_id = p.patient_id
+        LEFT JOIN  choicehistory ch ON ch.inquiry_id = dp.inquiry_id
+        LEFT JOIN  optiontable ot ON ot.option_id = ch.option_id
+        LEFT JOIN  inquirychoice ic ON ic.question_id = ot.question_id
+        LEFT JOIN  completionhistory coh ON coh.inquiry_id = dp.inquiry_id
+        LEFT JOIN  inquirycompletion ico ON ico.question_id = coh.question_id
+        WHERE dp.inquiry_id IN
+        (
+        SELECT
+        p.inquiry_id inquiryId
+        FROM dailypatient p
+        <where>
+            <if test="endDate != null and endDate != ''" >
+                AND p.inquiry_date &lt;= #{endDate}
+            </if>
+            <if test="startDate != null and startDate != ''">
+                AND p.inquiry_date &gt;= #{startDate}
+            </if>
+            <if test="keyString != null and keyString != ''">
+                AND p.inquiry_result like CONCAT(CONCAT('%', #{keyString, jdbcType=VARCHAR}),'%')
+            </if>
+        </where>
+        )
+               <!--<foreach collection="list" index="index" item="item" open="(" separator="," close=")">-->
+                       <!--#{item}-->
+               <!--</foreach>-->
+    </select>
+
+</mapper>

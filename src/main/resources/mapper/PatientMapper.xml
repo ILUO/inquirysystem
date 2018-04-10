@@ -3,55 +3,132 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.gluxen.dao.PatientDao">
     <resultMap id="patientMap" type="com.gluxen.util.model.One2Many">
-        <id column="patient_id" property="patientId"/>
-        <result column="certificates_type" property="certificatesType"/>
-        <result column="certificates_number" property="certificatesNumber"/>
+        <id column="patientId" property="patientId"/>
+        <result column="certificatesType" property="certificatesType"/>
+        <result column="certificatesNumber" property="certificatesNumber"/>
         <result column="pname" property="name"/>
-        <result column="gender" property="gender"/>
         <result column="birthday" property="birthday"/>
         <result column="nationality" property="nationality"/>
         <result column="pnational" property="national"/>
         <result column="incunabulum" property="incunabulum"/>
         <result column="residence" property="residence"/>
+        <result column="gender" property="gender"/>
         <result column="height" property="height"/>
         <result column="weight" property="weight"/>
         <result column="occupation" property="occupation"/>
-        <result column="religious_belief" property="religiousBelief"/>
-        <result column="eating_habits" property="eatingHabits"/>
-        <result column="family_members" property="familyMembers"/>
-        <result column="important_diagno" property="importantDiagno"/>
-        <result column="main_symptoms" property="mainSymptoms"/>
-        <result column="family_history" property="familyHistory"/>
-        <result column="infection_history" property="infectionHistory"/>
-        <result column="anamensis" property="anamensis"/>
-        <result column="contact_history" property="contactHistory"/>
-        <result column="marriage_history" property="marriageHistory"/>
-        <result column="birth_history" property="birthHistory"/>
-        <result column="trauma_history" property="traumaHistory"/>
-        <result column="surgery_history" property="surgeryHistory"/>
+        <result column="city" property="city"/>
+        <result column="pregnant" property="pregnant"/>
+        <result column="birth" property="birth"/>
+        <result column="prematureLabour" property="prematureLabour"/>
+        <result column="abortion" property="abortion"/>
+        <result column="belief" property="belief"/>
+        <result column="bloodTrans" property="bloodTrans"/>
         <result column="smoke" property="smoke"/>
         <result column="drink" property="drink"/>
-        <result column="quit_smoke" property="quitSmoke"/>
-        <result column="quit_drink" property="quitDrink"/>
+        <result column="dailyDrink" property="dailyDrink"/>
+        <result column="dailySmoke" property="dailySmoke"/>
+        <result column="contraception" property="contraception"/>
+        <result column="contactHistory" property="contactHistory"/>
+        <result column="eatingHabits" property="eatingHabits"/>
+        <result column="pastHistory" property="pastHistory"/>
+        <result column="marriage" property="marriage"/>
+        <result column="quitSmoke" property="quitSmoke"/>
+        <result column="quitDrink" property="quitDrink"/>
+        <result column="eatingHabitsRemark" property="eatingHabitsRemark"/>
+        <result column="pastHistoryRemark" property="pastHistoryRemark"/>
+        <result column="contactHistoryRemark" property="contactHistoryRemark"/>
+        <result column="traumaHistory" property="traumaHistory"/>
+        <result column="operationHistory" property="operationHistory"/>
+        <result column="familyHistory" property="familyHistory"/>
+        <result column="drugAllergy" property="drugAllergy"/>
+        <result column="drugAllergyRemark" property="drugAllergyRemark"/>
+        <result column="allergy" property="allergy"/>
+        <result column="allergyRemark" property="allergyRemark"/>
+        <result column="infectiousHistory" property="infectiousHistory"/>
+        <result column="infectiousHistoryRemark" property="infectiousHistoryRemark"/>
+        <result column="heredityHistory" property="heredityHistory"/>
+        <result column="heredityHistoryRemark" property="heredityHistoryRemark"/>
+        <result column="quitDrinkTime" property="quitDrinkTime"/>
+        <result column="quitSmokeTime" property="quitSmokeTime"/>
+        <result column="menarche" property="menarche"/>
+        <result column="menopauseAge" property="menopauseAge"/>
+        <result column="menstrualCycle" property="menstrualCycle"/>
+        <result column="menstruationPeriod" property="menstruationPeriod"/>
     </resultMap>
     <select id="getPatientInfo" resultMap="patientMap">
         SELECT
-            *
-        FROM patient
-        WHERE patient.patient_id=#{patientId}
+            p.patient_id patientId,
+            p.certificates_type certificatesType,
+            p.certificates_number certificatesNumber,
+            p.pname pname,
+            p.birthday birthday,
+            p.nationality nationality,
+            p.pnational pnational,
+            p.incunabulum incunabulum,
+            p.residence residence,
+            p.gender gender,
+            p.height height,
+            p.weight weight,
+            p.occupation occupation,
+            p.city city,
+            p.age age,
+            p.pregnant pregnant,
+            p.birth birth,
+            p.premature_labour prematureLabour,
+            p.abortion abortion,
+            p.belief belief,
+            p.blood_trans bloodTrans,
+            p.smoke smoke,
+            p.drink drink,
+            p.daily_drink dailyDrink,
+            p.daily_smoke dailySmoke,
+            p.contraception contraception,
+            p.contact_history contactHistory,
+            p.eating_habits eatingHabits,
+            p.past_history pastHistory,
+            p.marriage marriage,
+            p.quit_smoke quitSmoke,
+            p.quit_drink quitDrink,
+            p.eating_habits_remark eatingHabitsRemark,
+            p.past_history_remark pastHistoryRemark,
+            p.contact_history_remark contactHistoryRemark,
+            p.trauma_history traumaHistory,
+            p.operation_history operationHistory,
+            p.family_history familyHistory,
+            p.drug_allergy drugAllergy,
+            p.drug_allergy_remark drugAllergyRemark,
+            p.allergy allergy,
+            p.allergy_remark allergyRemark,
+            p.infectious_history infectiousHistory,
+            p.infectious_history_remark infectiousHistoryRemark,
+            p.heredity_history heredityHistory,
+            p.heredity_history_remark heredityHistoryRemark,
+            p.quit_drink_time quitDrinkTime,
+            p.quit_smoke_time quitSmoketime,
+            p.menarche menarche,
+            p.menopause_age menopauseAge,
+            p.menstrual_cycle menstrualCycle,
+            p.menstruation_period menstruationPeriod
+        FROM patient  p
+        WHERE p.patient_id = #{patientId}
     </select>
 
-    <select id="getNewPid" resultType="Integer">
+    <select id="getNewPid" resultType="int">
         SELECT IFNULL(MAX(patient_id)+1,10000)
         AS newId
         FROM patient
     </select>
 
-    <insert id="addPatient">
+    <select id="getTodayNo" resultType="int">
+        SELECT COUNT(create_date)+1
+        FROM patient
+        WHERE create_date = #{createDate}
+    </select>
+
+    <insert id="addPatient" >
         INSERT INTO patient
         (patient_id,
          pname,
-         gender,
          certificates_type,
          certificates_number,
          birthday,
@@ -62,27 +139,51 @@
          height,
          weight,
          occupation,
-         religious_belief,
-         eating_habits,
-         family_members,
-         important_diagno,
-         main_symptoms,
-         family_history,
-         infection_history,
-         anamensis,
-         contact_history,
-         marriage_history,
-         birth_history,
-         trauma_history,
-         surgery_history,
+         city,
+         age,
+         gender,
+         pregnant,
+         birth,
+         premature_labour,
+         abortion,
+         belief,
+         blood_trans,
          smoke,
          drink,
+         daily_drink,
+         daily_smoke,
+         contraception,
+         contact_history,
+         eating_habits,
+         past_history,
+         marriage,
          quit_smoke,
-         quit_drink)
+         quit_drink,
+         eating_habits_remark,
+         past_history_remark,
+         contact_history_remark,
+         trauma_history,
+         operation_history,
+         family_history,
+         drug_allergy,
+         drug_allergy_remark,
+         allergy,
+         allergy_remark,
+         infectious_history,
+         infectious_history_remark,
+         heredity_history,
+         heredity_history_remark,
+         quit_drink_time,
+         quit_smoke_time,
+         menarche,
+         menopause_age,
+         menstrual_cycle,
+         menstruation_period,
+         create_date
+         )
         VALUES
         (#{patientId},
          #{name},
-         #{gender},
          #{certificatesType},
          #{certificatesNumber},
          #{birthday},
@@ -93,24 +194,245 @@
          #{height},
          #{weight},
          #{occupation},
-         #{religiousBelief},
-         #{eatingHabits},
-         #{familyMembers},
-         #{importantDiagno},
-         #{mainSymptoms},
-         #{familyHistory},
-         #{infectionHistory},
-         #{anamensis},
-         #{contactHistory},
-         #{marriageHistory},
-         #{birthHistory},
-         #{traumaHistory},
-         #{surgeryHistory},
+         #{city},
+         #{age},
+         #{gender},
+         #{pregnant},
+         #{birth},
+         #{prematureLabour},
+         #{abortion},
+         #{belief},
+         #{bloodTrans},
          #{smoke},
          #{drink},
+         #{dailyDrink},
+         #{dailySmoke},
+         #{contraception},
+         #{contactHistory},
+         #{eatingHabits},
+         #{pastHistory},
+         #{marriage},
          #{quitSmoke},
-         #{quitDrink}
+         #{quitDrink},
+         #{eatingHabitsRemark},
+         #{pastHistoryRemark},
+         #{contactHistoryRemark},
+         #{traumaHistory},
+         #{operationHistory},
+         #{familyHistory},
+         #{drugAllergy},
+         #{drugAllergyRemark},
+         #{allergy},
+         #{allergyRemark},
+         #{infectiousHistory},
+         #{infectiousHistoryRemark},
+         #{heredityHistory},
+         #{heredityHistoryRemark},
+         #{quitSmokeTime},
+         #{quitDrinkTime},
+         #{menarche},
+         #{menopauseAge},
+         #{menstrualCycle},
+         #{menstruationPeriod},
+         #{createDate}
          )
+         ON DUPLICATE KEY UPDATE
+         pname = VALUES(pname),
+         certificates_type = VALUES(certificates_type),
+         certificates_number = VALUES(certificates_number),
+         birthday = VALUES(birthday),
+         nationality = VALUES (nationality),
+         pnational = VALUES(pnational),
+         incunabulum = VALUES (incunabulum),
+         residence = VALUES (residence),
+         height = VALUES (height),
+         weight = VALUES (weight),
+         occupation = VALUES (occupation),
+         city = VALUES (city),
+         age = VALUES (age),
+         gender = VALUES (gender),
+         pregnant = VALUES (pregnant),
+         birth = VALUES (birth),
+         premature_labour= VALUES (premature_labour),
+         abortion = VALUES (abortion),
+         belief = VALUES (belief),
+         blood_trans = VALUES (blood_trans),
+         smoke = VALUES (smoke),
+         drink = VALUES (drink),
+         daily_drink = VALUES (daily_drink),
+         daily_smoke = VALUES (daily_smoke),
+         contraception = VALUES (contraception),
+         contact_history = VALUES (contact_history),
+         eating_habits = VALUES (eating_habits),
+         past_history = VALUES (past_history),
+         marriage = VALUES (marriage),
+         quit_smoke = VALUES (quit_smoke),
+         quit_drink = VALUES (quit_drink),
+         eating_habits_remark = VALUES (eating_habits_remark),
+         past_history_remark = VALUES (past_history_remark),
+         contact_history_remark = VALUES (contact_history_remark),
+         trauma_history = VALUES(trauma_history),
+         operation_history = VALUES(operation_history),
+         family_history = VALUES(family_history),
+         drug_allergy = VALUES(drug_allergy),
+         drug_allergy_remark = VALUES(drug_allergy_remark),
+         allergy = VALUES(allergy),
+         allergy_remark = VALUES(allergy_remark),
+         infectious_history = VALUES(infectious_history),
+         infectious_history_remark = VALUES(infectious_history_remark),
+         heredity_history = VALUES(heredity_history),
+         heredity_history_remark = VALUES(heredity_history_remark),
+         quit_smoke_time = VALUES(quit_smoke_time),
+         quit_drink_time = VALUES(quit_drink_time),
+         menarche = VALUES(menarche),
+         menopause_age = VALUES(menopause_age),
+         menstrual_cycle = VALUES(menstrual_cycle),
+         menstruation_period = VALUES(menstruation_period)
     </insert>
+
+    <insert id="addBasicHistory" parameterType="java.util.List">
+        INSERT INTO basiccompletion
+        (basiccompletion_id,
+         patient_id,
+         infection_history,
+         trauma_history,
+         family_history,
+         surgery_history,
+         main_symptoms,
+         important_diagno)
+         VALUES
+         <foreach collection="list" item="item" index="index" separator=",">
+             (#{item.basicCompletionId},
+             #{item.patientId},
+             #{item.infectionHistory},
+             #{item.traumaHistory},
+             #{item.familyHistory},
+             #{item.surgeryHistory},
+             #{item.mainSymptoms},
+             #{item.importantDiagno})
+         </foreach>
+        ON DUPLICATE KEY UPDATE
+        infection_history = VALUES (infection_history),
+        trauma_history = VALUES (trauma_history),
+        family_history = VALUES (family_history),
+        surgery_history = VALUES (surgery_history),
+        main_symptoms = VALUES (main_symptoms),
+        important_diagno = VALUES (important_diagno)
+    </insert>
+    <insert id="addFamily" parameterType="java.util.List">
+        INSERT INTO family(
+         member_id,
+         patient_id,
+         family_id,
+         relation,
+         family_name
+        )VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.memberId},
+            #{item.patientId},
+            #{item.familyId},
+            #{item.relation},
+            #{item.familyName})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        patient_id = VALUEs (patient_id),
+        family_id = VALUES (family_id),
+        relation = VALUES (relation),
+        family_name = VALUES (family_name)
+    </insert>
+
+    <select id="getFamily" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        f.member_id memberId,
+        f.patient_id patientId,
+        f.family_id familyId,
+        f.relation relation,
+        f.family_name familyName
+        FROM family f
+        WHERE f.patient_id=#{patientId}
+        LIMIT #{offSet},#{pageRow}
+    </select>
+
+    <select id="countFamily" resultType="Integer">
+        SELECT  count(f.patient_id)
+        FROM family f
+        WHERE f.patient_id = #{patientId}
+    </select>
+
+    <delete id="deleteFamily">
+        DELETE FROM family
+        WHERE family.member_id = #{memberId}
+    </delete>
+
+
+    <select id="getHistoryList" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        bc.basiccompletion_id basicCompletionId,
+        bc.patient_id patientId,
+        bc.infection_history infectionHistory,
+        bc.trauma_history traumaHistory,
+        bc.family_history familyHistory,
+        bc.surgery_history srgeryHistory,
+        bc.main_symptoms mainSymptoms,
+        bc.important_diagno importantDiagno
+        FROM basiccompletion bc
+        WHERE bc.patient_id=#{patientId}
+        LIMIT #{offSet},#{pageRow}
+    </select>
+
+    <select id="getHistory" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        bc.basiccompletion_id basicCompletionId,
+        bc.patient_id patientId,
+        bc.infection_history infectionHistory,
+        bc.surgery_history surgeryHistory,
+        bc.trauma_history traumaHistory,
+        bc.family_history familyHistory,
+        bc.main_symptoms mainSymptoms,
+        bc.important_diagno importantDiagno
+        FROM basiccompletion bc
+        WHERE bc.patient_id=#{patientId}
+    </select>
+
+    <select id="countHistory" resultType="Integer">
+        SELECT  count(bc.patient_id)
+        FROM basiccompletion bc
+        WHERE bc.patient_id = #{patientId}
+    </select>
+
+    <delete id="deleteHistory">
+        DELETE FROM basiccompletion
+        WHERE basiccompletion_id = #{basicCompletionId}
+    </delete>
+
+    <select id="getPatientList" resultType="com.alibaba.fastjson.JSONObject">
+         SELECT
+           p.patient_id patientId,
+           p.pname patientName
+         FROM patient p
+         <where>
+             <if test="patientName != null ">
+                 p.pname like CONCAT(CONCAT('%', #{patientName, jdbcType=VARCHAR}),'%')
+             </if>
+         </where>
+         ORDER BY patientId DESC
+         LIMIT #{offSet},#{pageRow}
+    </select>
+
+    <select id="countPatient" resultType="Integer">
+        SELECT  count(p.patient_id)
+        FROM patient p
+        <where>
+            <if test="patientName != null ">
+                p.pname like CONCAT(CONCAT('%', #{patientName, jdbcType=VARCHAR}),'%')
+            </if>
+        </where>
+    </select>
+
+    <delete id="deletePatient">
+        UPDATE patient
+        SET delete_status = 0
+        WHERE patient.patient_id = #{patientId}
+    </delete>
 
 </mapper>

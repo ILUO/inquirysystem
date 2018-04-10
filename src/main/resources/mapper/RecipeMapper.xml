@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gluxen.dao.RecipeDao">
+    <insert id="addMainRecipe">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="mainRecipeId">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO mainrecipe
+        (mainrecipe_id,
+        inquiry_id
+        )
+        VALUES
+        (#{mainRecipeId},
+         #{inquiryId})
+        ON DUPLICATE KEY UPDATE
+        mainrecipe_id = VALUES (mainrecipe_id),
+        inquiry_id = VALUES (inquiry_id)
+    </insert>
+
+    <insert id="addRecipe">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="recipeId">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO recipe
+        (recipe_id,
+        remarks,
+        amount,
+        recipe_type,
+        mainrecipe_id)
+        VALUES
+        (#{recipeId},
+        #{remarks},
+        #{amount},
+        #{recipeType},
+        #{mainRecipeId})
+        ON DUPLICATE KEY UPDATE
+        recipe_type = VALUES (recipe_type),
+        remarks = VALUES (remarks),
+        amount = VALUES (amount)
+    </insert>
+
+    <insert id="addRecipeDetail" parameterType="java.util.List">
+        INSERT INTO recipedetail(
+        detail_id,
+        recipe_id,
+        medicine,
+        dose
+        )VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.detailId},
+            #{item.recipeId},
+            #{item.medicine},
+            #{item.dose})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        detail_id = VALUES (detail_id),
+        recipe_id = VALUES (recipe_id),
+        medicine = VALUES (medicine),
+        dose = VALUES (dose)
+    </insert>
+
+    <resultMap id="recipeMap" type="com.gluxen.util.model.One2Many">
+        <id column="mainrecipeId" property="mainRecipeId"/>
+        <result column="inquiryId" property="inquiryId"/>
+        <collection property="recipeList" ofType="com.gluxen.util.model.One2Many">
+            <id column="recipeId" property="recipeId"/>
+            <result column="remarks" property="remarks"/>
+            <result column="amount" property="amount"/>
+            <result column="remark" property="remark"/>
+            <collection property="recipeDetailList" ofType="com.alibaba.fastjson.JSONObject">
+                <id column="detailId" property="detailId"/>
+                <result column="medicine" property="medicine"/>
+                <result column="dose" property="dose"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <select id="getRecipe" resultMap="recipeMap">
+        SELECT
+        m.mainrecipe_id mainrecipeId,
+        m.inquiry_id inquiryId,
+        r.recipe_id recipeId,
+        r.remarks remarks,
+        r.amount amount,
+        rd.detail_id detailId,
+        rd.medicine medicine,
+        rd.dose dose
+        FROM mainrecipe m
+        LEFT JOIN recipe r ON m.mainrecipe_id = r.mainrecipe_id
+        LEFT JOIN recipedetail rd ON r.recipe_id = rd.recipe_id
+        WHERE m.inquiry_id = #{inquiryId}
+    </select>
+
+    <select id="isRecipe" resultType="int">
+        SELECT COUNT(inquiry_id)
+        FROM mainrecipe
+        WHERE mainrecipe.inquiry_id = #{inquiryId}
+    </select>
+    
+    <delete id="deleteMainRecipe">
+        DELETE FROM mainrecipe
+        WHERE mainrecipe.mainrecipe_id = #{mainRecipeId}
+    </delete>
+
+    <delete id="deleteRecipe">
+        DELETE FROM recipe
+        WHERE recipe.recipe_id = #{recipeId}
+    </delete>
+
+    <delete id="deleteRecipeDetail">
+        DELETE FROM recipedetail
+        WHERE recipedetail.detail_id = #{detailId}
+    </delete>
+
+    <select id="countRecipe" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        rp.medicine medicine,
+        SUM(rp.dose*r.amount) dose
+        FROM recipedetail rp,recipe r,mainrecipe mr,dailypatient dp
+        <where>
+            rp.recipe_id = r.recipe_id
+            AND r.mainrecipe_id = mr.mainrecipe_id
+            AND dp.inquiry_id = mr.inquiry_id
+            <if test="endDate != null " >
+                AND dp.inquiry_date &lt;= #{endDate}
+            </if>
+            <if test="startDate != null">
+                AND dp.inquiry_date &gt;= #{startDate}
+            </if>
+            <if test="medicine != null and medicine != ''">
+                AND rp.medicine LIKE CONCAT(CONCAT('%', #{medicine, jdbcType=VARCHAR}),'%')
+            </if>
+        </where>
+        GROUP BY rp.medicine
+        LIMIT #{offSet},#{pageRow}
+    </select>
+
+    <select id="countMedicine" resultType="Integer">
+        SELECT
+        count(rp.medicine) medicine
+        FROM recipedetail rp,recipe r,mainrecipe mr,dailypatient dp
+        <where>
+            rp.recipe_id = r.recipe_id
+            AND r.mainrecipe_id = mr.mainrecipe_id
+            AND dp.inquiry_id = mr.inquiry_id
+            <if test="endDate != null " >
+                AND dp.inquiry_date &lt;= #{endDate}
+            </if>
+            <if test="startDate != null">
+                AND dp.inquiry_date &gt;= #{startDate}
+            </if>
+            <if test="medicine != null and medicine != ''">
+                AND rp.medicine LIKE CONCAT(CONCAT('%', #{medicine, jdbcType=VARCHAR}),'%')
+            </if>
+        </where>
+        GROUP BY rp.medicine
+    </select>
+
+    <insert id="updateRecipe" parameterType="java.util.List">
+        INSERT INTO recipe
+        (recipe_id,
+        remarks,
+        amount)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.recipeId},
+            #{item.remarks},
+            #{item.amount})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        remarks = VALUES (remarks),
+        amount = VALUES (amount)
+    </insert>
+
+
+</mapper>

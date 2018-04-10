@@ -1,10 +1,42 @@
 spring:
   datasource:
       driver-class-name: com.mysql.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/inquiry?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
-      username: root
-      password: 123456
+      url: 
+#      url: jdbc:mysql://localhost:3306/chinesemedecine?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
+      username: 
+#      password: 
+      password: 
+  http:
+      multipart:
+        max-file-size: 10Mb
+        max-request-size: 50mb
+  aop:
+    auto: true
+    proxy-target-class: false
+  resources:
+    static-locations: file:${web.upload-path},file:${web.front-path}
+
+
+
 mybatis:
    mapperLocations: classpath:/mapper/*.xml
    configuration:
       mapUnderscoreToCamelCase: true
+#      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+springfox:
+  documentation:
+    swagger:
+      v2:
+        path: /api-docs
+
+logging:
+  level: debug
+server:
+  port: 8085
+
+web:
+#  upload-path: /usr/local/inquirysystem/picture
+#  front-path: /usr/local/inquirysystem/front
+  upload-path: D:\inquirysystem\picture
+  front-path: D:\inquirysystem\front
